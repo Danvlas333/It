@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ariadne</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6e6fa; /* Лавандовый фон */
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background-color: #d8d8f7; /* Светло-лавандовый фон */
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .file-upload {
+            width: 45%;
+            padding: 10px;
+            border: 2px dashed #9370db; /* Фиолетовая пунктирная линия */
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #c8a2c8; /* Пурпурный фон */
+            color: white;
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #98fb98; /* Светло-зеленый фон */
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .results-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-display {
+            width: 50%;
+            height: 200px;
+            background-color: #c8a2c8; /* Пурпурный фон */
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .download-button {
+            width: 45%;
+            padding: 10px;
+            background-color: #f0f0f0; /* Серый фон */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .diagram-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .diagram-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .diagram-circle {
+            width: 100px;
+            height: 100px;
+            background-color: #b0b0b0; /* Серый фон */
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Ariadne</div>
+    <div class="description">
+        Умный алгоритм, который за секунды найдёт все, даже самые хитрые изменения на картах.
+    </div>
+
+    <div class="section">
+        <div class="section-title">Пояснение</div>
+        <div>текст текст текст текст</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Загрузка файлов</div>
+        <div class="file-upload-container">
+            <div class="file-upload" id="upload1">Загрузить файл 1</div>
+            <div class="file-upload" id="upload2">Загрузить файл 2</div>
+        </div>
+        <button class="start-button" id="startButton">Запустить</button>
+    </div>
+
+    <div class="section">
+        <div class="results-container">
+            <div class="image-display" id="imageDisplay">Изображение</div>
+            <button class="download-button" id="downloadButton">Скачать файл</button>
+        </div>
+        <div class="diagram-container">
+            <div class="diagram-title">Диаграмма</div>
+            <div class="diagram-circle" id="diagramCircle"></div>
+        </div>
+    </div>
+
+    <script>
+        // Пример функциональности для демонстрации
+        document.getElementById('upload1').addEventListener('click', function() {
+            alert('Загрузите первый файл');
+        });
+
+        document.getElementById('upload2').addEventListener('click', function() {
+            alert('Загрузите второй файл');
+        });
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            alert('Алгоритм запущен!');
+            // Здесь можно добавить логику для обработки изображений и отображения результата
+        });
+
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            alert('Файл скачан!');
+        });
+    </script>
+</body>
+</html>
