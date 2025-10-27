@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ariadne</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6e6fa;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background-color: #d8d8f7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .file-upload {
+            width: 45%;
+            padding: 10px;
+            border: 2px dashed #9370db;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #c8a2c8;
+            color: white;
+        }
+
+        .file-upload.has-file {
+            background-color: #98fb98;
+            color: #333;
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #98fb98;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .start-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .results-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-display {
+            width: 50%;
+            height: 200px;
+            background-color: #c8a2c8;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .download-button {
+            width: 45%;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .download-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .diagram-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .diagram-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .diagram-circle {
+            width: 100px;
+            height: 100px;
+            background: conic-gradient(#98fb98 0% var(--percentage, 0%), #b0b0b0 var(--percentage, 0%) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: #98fb98;
+            color: #333;
+        }
+
+        .status-error {
+            background-color: #ffcccc;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Ariadne</div>
+    <div class="description">
+        Умный алгоритм, который за секунды найдёт все, даже самые хитрые изменения на картах.
+    </div>
+
+    <div class="section">
+        <div class="section-title">Пояснение</div>
+        <div>Загрузите два изображения карт для сравнения. Алгоритм найдет различия между ними и выделит измененные области.</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Загрузка файлов</div>
+        <div class="file-upload-container">
+            <input type="file" id="fileInput1" accept="image/*" style="display: none">
+            <div class="file-upload" id="upload1">Загрузить файл 1</div>
+
+            <input type="file" id="fileInput2" accept="image/*" style="display: none">
+            <div class="file-upload" id="upload2">Загрузить файл 2</div>
+        </div>
+
+        <div id="statusMessage"></div>
+
+        <button class="start-button" id="startButton" disabled>Запустить</button>
+    </div>
+
+    <div class="section">
+        <div class="results-container">
+            <div class="image-display" id="imageDisplay">Результат появится здесь</div>
+            <button class="download-button" id="downloadButton" disabled>Скачать результат</button>
+        </div>
+        <div class="diagram-container">
+            <div class="diagram-title">Схожесть</div>
+            <div class="diagram-circle" id="diagramCircle">0%</div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFiles = {
+            file1: null,
+            file2: null
+        };
+
+        // Элементы DOM
+        const fileInput1 = document.getElementById('fileInput1');
+        const fileInput2 = document.getElementById('fileInput2');
+        const upload1 = document.getElementById('upload1');
+        const upload2 = document.getElementById('upload2');
+        const startButton = document.getElementById('startButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const diagramCircle = document.getElementById('diagramCircle');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Обработчики загрузки файлов
+        upload1.addEventListener('click', () => fileInput1.click());
+        upload2.addEventListener('click', () => fileInput2.click());
+
+        fileInput1.addEventListener('change', (e) => handleFileUpload(e, 'file1', upload1));
+        fileInput2.addEventListener('change', (e) => handleFileUpload(e, 'file2', upload2));
+
+        function handleFileUpload(event, fileType, uploadElement) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadedFiles[fileType] = file;
+                uploadElement.textContent = file.name;
+                uploadElement.classList.add('has-file');
+                showStatus(`Файл "${file.name}" загружен`, 'success');
+
+                // Показываем превью
+                if (fileType === 'file1' || fileType === 'file2') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (fileType === 'file1') {
+                            // Можно добавить превью если нужно
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+                checkFilesReady();
+            }
+        }
+
+        function checkFilesReady() {
+            if (uploadedFiles.file1 && uploadedFiles.file2) {
+                startButton.disabled = false;
+            } else {
+                startButton.disabled = true;
+            }
+        }
+
+        // Обработчик запуска обработки
+        startButton.addEventListener('click', processImages);
+
+        async function processImages() {
+            if (!uploadedFiles.file1 || !uploadedFiles.file2) {
+                showStatus('Пожалуйста, загрузите оба файла', 'error');
+                return;
+            }
+
+            // Показываем состояние загрузки
+            setLoadingState(true);
+            showStatus('Обрабатываем изображения...', 'success');
+
+            try {
+                // Загружаем файлы на сервер
+                const formData1 = new FormData();
+                formData1.append('file', uploadedFiles.file1);
+                formData1.append('type', 'file1');
+
+                const formData2 = new FormData();
+                formData2.append('file', uploadedFiles.file2);
+                formData2.append('type', 'file2');
+
+                // Отправляем файлы
+                const upload1 = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData1
+                });
+
+                const upload2 = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData2
+                });
+
+                if (!upload1.ok || !upload2.ok) {
+                    throw new Error('Ошибка загрузки файлов');
+                }
+
+                const result1 = await upload1.json();
+                const result2 = await upload2.json();
+
+                // Запускаем обработку
+                const processResponse = await fetch('/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        file1: result1.filename,
+                        file2: result2.filename
+                    })
+                });
+
+                const processResult = await processResponse.json();
+
+                if (processResult.success) {
+                    showResults(processResult);
+                    showStatus('Обработка завершена успешно!', 'success');
+                } else {
+                    throw new Error(processResult.error || 'Ошибка обработки');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(`Ошибка: ${error.message}`, 'error');
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function showResults(result) {
+            // Обновляем диаграмму
+            const percentage = result.similarity_score || 0;
+            diagramCircle.style.setProperty('--percentage', `${percentage}%`);
+            diagramCircle.textContent = `${percentage}%`;
+
+            // Обновляем область результата
+            imageDisplay.textContent = 'Результат сравнения';
+            imageDisplay.style.backgroundImage = `url(${result.result_image || ''})`;
+            imageDisplay.style.backgroundSize = 'cover';
+            imageDisplay.style.backgroundPosition = 'center';
+
+            // Активируем кнопку скачивания
+            downloadButton.disabled = false;
+        }
+
+        function setLoadingState(loading) {
+            if (loading) {
+                document.body.classList.add('loading');
+                startButton.textContent = 'Обработка...';
+                startButton.disabled = true;
+            } else {
+                document.body.classList.remove('loading');
+                startButton.textContent = 'Запустить';
+                startButton.disabled = !(uploadedFiles.file1 && uploadedFiles.file2);
+            }
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message';
+            statusMessage.classList.add(`status-${type}`);
+
+            // Автоматически скрываем сообщение через 5 секунд
+            setTimeout(() => {
+                statusMessage.textContent = '';
+                statusMessage.className = 'status-message';
+            }, 5000);
+        }
+
+        // Обработчик скачивания
+        downloadButton.addEventListener('click', () => {
+            alert('Функция скачивания будет реализована после обработки');
+            // В реальном приложении здесь будет запрос к серверу для скачивания файла
+        });
+    </script>
+</body>
+</html>
